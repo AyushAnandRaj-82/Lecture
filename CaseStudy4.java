@@ -1,14 +1,68 @@
 import java.util.Scanner;
 
-class Product {
+class InvalidPriceException extends Exception {
+    InvalidPriceException(String message) {
+        super(message);
+    }
+}
 
-    int productId;
-    String productName;
+class InvalidQuantityException extends Exception {
+    InvalidQuantityException(String message) {
+        super(message);
+    }
+}
+
+class InvalidDiscountException extends Exception {
+    InvalidDiscountException(String message) {
+        super(message);
+    }
+}
+
+class PaymentException extends Exception {
+    PaymentException(String message) {
+        super(message);
+    }
+}
+
+class Shopping {
+
     int price;
     int quantity;
+    int discount;
 
-    int totalCost() {
-        return price * quantity;
+    Shopping(int price, int quantity, int discount) {
+        this.price = price;
+        this.quantity = quantity;
+        this.discount = discount;
+    }
+
+    void calculateBill(int payment) throws InvalidPriceException,
+            InvalidQuantityException, InvalidDiscountException, PaymentException {
+
+        if (price <= 0) {
+            throw new InvalidPriceException("Invalid product price");
+        }
+
+        if (quantity <= 0) {
+            throw new InvalidQuantityException("Invalid quantity");
+        }
+
+        if (discount < 0 || discount > 100) {
+            throw new InvalidDiscountException("Invalid discount percentage");
+        }
+
+        int total = price * quantity;
+        int finalAmount = total - (total * discount / 100);
+
+        if (payment < finalAmount) {
+            throw new PaymentException("Payment amount is less than the bill");
+        }
+
+        System.out.println("Total amount: " + total);
+        System.out.println("Discount: " + discount + "%");
+        System.out.println("Final amount: " + finalAmount);
+        System.out.println("Payment successful");
+        System.out.println("Change: " + (payment - finalAmount));
     }
 }
 
@@ -18,35 +72,39 @@ public class CaseStudy4 {
 
         Scanner sc = new Scanner(System.in);
 
-        Product p = new Product();
+        try {
+            System.out.print("Enter product price: ");
+            int price = sc.nextInt();
 
-        System.out.print("Enter Product ID: ");
-        p.productId = sc.nextInt();
+            System.out.print("Enter quantity: ");
+            int quantity = sc.nextInt();
 
-        sc.nextLine();
+            System.out.print("Enter discount percentage: ");
+            int discount = sc.nextInt();
 
-        System.out.print("Enter Product Name: ");
-        p.productName = sc.nextLine();
+            System.out.print("Enter payment amount: ");
+            int payment = sc.nextInt();
 
-        System.out.print("Enter Price: ");
-        p.price = sc.nextInt();
+            Shopping s = new Shopping(price, quantity, discount);
 
-        System.out.print("Enter Quantity: ");
-        p.quantity = sc.nextInt();
+            s.calculateBill(payment);
 
-        int totalBill = p.totalCost();
+        } catch (InvalidPriceException e) {
+            System.out.println(e.getMessage());
 
-        System.out.println("\nProduct ID: " + p.productId);
-        System.out.println("Product Name: " + p.productName);
-        System.out.println("Total Cost: " + totalBill);
+        } catch (InvalidQuantityException e) {
+            System.out.println(e.getMessage());
 
-        if (totalBill > 5000) {
-            double discount = totalBill * 0.10;
-            totalBill = totalBill - (int) discount;
+        } catch (InvalidDiscountException e) {
+            System.out.println(e.getMessage());
 
-            System.out.println("Discount: " + discount);
+        } catch (PaymentException e) {
+            System.out.println(e.getMessage());
+
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter numbers only.");
         }
 
-        System.out.println("Final Bill: " + totalBill);
+        sc.close();
     }
 }

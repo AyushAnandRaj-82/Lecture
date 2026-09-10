@@ -1,23 +1,40 @@
 import java.util.Scanner;
 
-class employee {
+class InvalidMarksException extends Exception {
+    InvalidMarksException(String message) {
+        super(message);
+    }
+}
 
-    int employeeId;
-    String name;
-    int basicSalary;
+class Student {
 
-    void calculateSalary() {
+    int total;
+    int subjects;
 
-        double hra = basicSalary * 0.20;
-        double da = basicSalary * 0.10;
-        double grossSalary = basicSalary + hra + da;
+    Student() {
+        total = 0;
+        subjects = 0;
+    }
 
-        System.out.println("\nEmployee ID: " + employeeId);
-        System.out.println("Name: " + name);
-        System.out.println("Basic Salary: " + basicSalary);
-        System.out.println("HRA: " + hra);
-        System.out.println("DA: " + da);
-        System.out.println("Gross Salary: " + grossSalary);
+    void addMarks(int marks) throws InvalidMarksException {
+
+        if (marks < 0 || marks > 100) {
+            throw new InvalidMarksException("Marks must be between 0 and 100");
+        }
+
+        total = total + marks;
+        subjects++;
+    }
+
+    void calculateAverage() {
+
+        if (subjects == 0) {
+            throw new ArithmeticException("No subjects entered");
+        }
+
+        int average = total / subjects;
+
+        System.out.println("Average marks: " + average);
     }
 }
 
@@ -27,19 +44,31 @@ public class CaseStudy3 {
 
         Scanner sc = new Scanner(System.in);
 
-        employee e = new employee();
+        try {
+            System.out.print("Enter number of subjects: ");
+            int n = sc.nextInt();
 
-        System.out.print("Enter Employee ID: ");
-        e.employeeId = sc.nextInt();
+            Student s = new Student();
 
-        sc.nextLine();
+            for (int i = 0; i < n; i++) {
+                System.out.print("Enter marks: ");
+                int marks = sc.nextInt();
 
-        System.out.print("Enter Name: ");
-        e.name = sc.nextLine();
+                s.addMarks(marks);
+            }
 
-        System.out.print("Enter Basic Salary: ");
-        e.basicSalary = sc.nextInt();
+            s.calculateAverage();
 
-        e.calculateSalary();
+        } catch (InvalidMarksException e) {
+            System.out.println(e.getMessage());
+
+        } catch (ArithmeticException e) {
+            System.out.println(e.getMessage());
+
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter numbers only.");
+        }
+
+        sc.close();
     }
 }

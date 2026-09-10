@@ -1,29 +1,39 @@
 import java.util.Scanner;
 
-class Bank {
+class InsufficientBalanceException extends Exception {
+    InsufficientBalanceException(String message) {
+        super(message);
+    }
+}
 
-    int accountNumber;
-    String name;
+class InvalidAmountException extends Exception {
+    InvalidAmountException(String message) {
+        super(message);
+    }
+}
+
+class BankAccount {
+
     int balance;
 
-    void deposit(int amount) {
-        balance = balance + amount;
-        System.out.println("Amount deposited");
+    BankAccount(int balance) {
+        this.balance = balance;
     }
 
-    void withdraw(int amount) {
-        if (amount > balance) {
-            System.out.println("Insufficient Balance");
-        } else {
-            balance = balance - amount;
-            System.out.println("Amount withdrawn");
+    void withdraw(int amount) throws InsufficientBalanceException, InvalidAmountException {
+
+        if (amount <= 0) {
+            throw new InvalidAmountException("Invalid withdrawal amount");
         }
-    }
 
-    void displayBalance() {
-        System.out.println("Account Number: " + accountNumber);
-        System.out.println("Name: " + name);
-        System.out.println("Balance: " + balance);
+        if (amount > balance) {
+            throw new InsufficientBalanceException("Insufficient balance");
+        }
+
+        balance = balance - amount;
+
+        System.out.println("Withdrawal successful");
+        System.out.println("Remaining balance: " + balance);
     }
 }
 
@@ -33,27 +43,27 @@ public class CaseStudy2 {
 
         Scanner sc = new Scanner(System.in);
 
-        Bank b = new Bank();
+        try {
+            System.out.print("Enter balance: ");
+            int balance = sc.nextInt();
 
-        System.out.print("Enter Account Number: ");
-        b.accountNumber = sc.nextInt();
+            System.out.print("Enter withdrawal amount: ");
+            int amount = sc.nextInt();
 
-        sc.nextLine();
+            BankAccount b = new BankAccount(balance);
 
-        System.out.print("Enter Name: ");
-        b.name = sc.nextLine();
+            b.withdraw(amount);
 
-        System.out.print("Enter Balance: ");
-        b.balance = sc.nextInt();
+        } catch (InsufficientBalanceException e) {
+            System.out.println(e.getMessage());
 
-        System.out.print("Enter Deposit Amount: ");
-        int deposit = sc.nextInt();
-        b.deposit(deposit);
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
 
-        System.out.print("Enter Withdraw Amount: ");
-        int withdraw = sc.nextInt();
-        b.withdraw(withdraw);
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter numbers only.");
+        }
 
-        b.displayBalance();
+        sc.close();
     }
 }
